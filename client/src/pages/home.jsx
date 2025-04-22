@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { getDataAPI } from './../utils/fetchData';
+import '../styles/homecard.css'
 import HomeCard from './HomeCard';
 const Home = () => {
     const [news, setNews] = useState([]);

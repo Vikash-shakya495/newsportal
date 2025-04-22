@@ -1,95 +1,145 @@
 * {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
 body {
-  font-family: arial;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #c6320d;
 }
 
-.card {
-  width: 20%;
-  display: inline-block;
-  box-shadow: 2px 2px 20px black;
-  border-radius: 0.7rem;
-  margin: 2%;
-  text-overflow: ellipsis;
-  justify-content: center;
-}
-.card:hover {
-  transform: scale(1.03);
-  transform-origin: 3% 3%;
-  transition: transform 0.3s ease-out;
-  box-shadow: 4px 4px 30px black;
+.main{
+  background: linear-gradient(0deg, #f7c7c7,rgb(254, 253, 253) ,rgb(254, 253, 253) ) ;
 }
 
-.image img {
+.news-card {
   width: 100%;
-  height: 25vh;
+  max-width: 360px;
+  display: inline-block;
+  margin: 1.2rem;
+  background-color: #b60404;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  vertical-align: top;
+}
+
+.news-card:hover {
+  transform: scale(1.035);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.news-image img {
+  width: 100%;
+  height: 220px;
   object-fit: cover;
-  border-top-right-radius: 0.6rem;
-  border-top-left-radius: 0.6rem;
+  transition: transform 0.4s ease;
 }
 
-.title {
-  text-align: center;
-  padding: 10px;
+.news-card:hover .news-image img {
+  transform: scale(1.05);
 }
 
-h1 {
-  height: 5.5rem;
-  padding-left: 0.5em;
-  margin-right: 0.5em;
-  font-size: 20px;
-  overflow: scroll;
+.news-content {
+  padding: 18px;
+  background-color: #f9fafb;
+}
+
+.news-category {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.news-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #1e293b;
+  max-height: 4.5rem;
+  overflow: auto;
   word-wrap: break-word;
-  max-height: 5.5rem;
+  scrollbar-width: none;
+  margin: 10px 0;
 }
 
-.des {
-  padding: 3px;
+.news-title::-webkit-scrollbar {
+  display: none;
+}
+
+.news-snippet {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  max-height: 4.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 16px;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 12px;
+}
+
+.read-more-btn {
+  display: block;
   text-align: center;
-  /* padding-top: 10px; */
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-::-webkit-scrollbar {
-  width: 0; /* Remove scrollbar space */
-  background: transparent; /* Optional: just make scrollbar invisible */
-}
-.homecard__btn {
-  margin-bottom: 10px;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 10px;
-}
-.homecard__btn:hover {
-  background-color: black;
+  margin-top: 16px;
+  background: linear-gradient(to right, #f43f5e, #8b5cf6);
   color: white;
-  transition: 0.5s;
-  cursor: pointer;
-}
-.btn1 {
-  color: black;
+  padding: 10px 0;
+  border-radius: 50px;
   text-decoration: none;
-  font-size: small;
-  padding: 0.8em;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
-.btn1:hover {
-  color: white;
+
+.read-more-btn:hover {
+  background: linear-gradient(to right, #7c3aed, #f43f5e);
+  transform: translateY(-2px);
 }
+
+/* Container if you're using multiple cards */
+.news-container {
+  column-count: 3;
+  column-gap: 1.5rem;
+  padding: 2rem;
+}
+
+@media screen and (max-width: 1024px) {
+  .news-container {
+    column-count: 2;
+  }
+}
+
 @media screen and (max-width: 768px) {
-  .card {
-    display: block;
-    width: 94%;
-    margin-top: 1.5em;
+  .news-container {
+    column-count: 1;
   }
-  h1 {
-    max-height: 4rem;
-    padding: 0;
-    margin: 0.3em;
+}
+
+
+/* Responsive Breakpoints */
+@media screen and (max-width: 1024px) {
+  .news-snippet,
+  .news-title {
+    max-height: none;
   }
-  .des {
-    padding-top: 0;
+
+  .news-meta {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
   }
 }

@@ -1,38 +1,58 @@
 const News = require('../models/newsModel');
 const Users = require('../models/userModel');
 const Comment = require('../models/cmntModel');
+const slugify = require('slugify');
+
 
 const newsCtrl = {
     addNews: async (req, res) => {
         try {
-            const { title, images, content, category, user } = req.body;
+            const { title, images, content, category, tags = [], isPublished = false, user } = req.body;
 
-            if (images.length === 0)
-                return res.status(400).json({ msg: "Please add your photo." })
-
+            if (!images || images.length === 0)
+                return res.status(400).json({ msg: "Please add your photo." });
+            
             if (!title)
                 return res.status(400).json({ msg: "Please add title." });
 
             if (!content)
                 return res.status(400).json({ msg: "Please add content." });
-
+            
             if (!category)
-                return res.status(400).json({ msg: "Please add Category." });
+                return res.status(400).json({ msg: "Please add category." });
+            
+            const slug = `${slugify(title, { lower: true, strict: true })}-${Date.now()}`;
 
-            const newNew = new News({
-                title, images, content, category, user
+            const existingNews = await News.findOne({ slug });
+            if (existingNews)
+                return res.status(400).json({ msg: "News with similar title already exists." });
+
+            const newNews = new News({
+                title,
+                slug,
+                images,
+                content,
+                category,
+                tags,
+                user,
+                isPublished,
+                publishedAt: isPublished ? new Date() : null,
+                views: 0
             });
-            await newNew.save();
 
-            res.json({
-                msg: 'News Added XD',
-                newNew: {
-                    ...newNew._doc,
+            await newNews.save();
+
+            res.status(201).json({
+                msg: 'News Added Successfully 🎉',
+                news: {
+                    ...newNews._doc,
                     user: req.user
                 }
-            })
+            });
+
         } catch (err) {
-            return res.status(500).json({ msg: err.message });
+            console.error("Error adding news:", err);
+            return res.status(500).json({ msg: "Internal Server Error" });
         }
     },
     allNews: async (req, res) => {
@@ -50,22 +70,22 @@ const newsCtrl = {
     editNews: async (req, res) => {
         try {
             const { title, images, content, category } = req.body;
-            const news = await News.findByIdAndUpdate({_id: req.params.id}, {
+            const news = await News.findByIdAndUpdate({ _id: req.params.id }, {
                 title, images, content, category
             });
-    
+
             if (images.length === 0)
                 return res.status(400).json({ msg: "Please add your photo." })
-    
+
             if (!title)
                 return res.status(400).json({ msg: "Please add title." });
-    
+
             if (!content)
                 return res.status(400).json({ msg: "Please add content." });
-    
+
             if (!category)
-                return res.status(400).json({ msg: "Please add Category." });    
-                
+                return res.status(400).json({ msg: "Please add Category." });
+
             res.json({
                 msg: 'News Updated',
                 newNew: {
@@ -79,8 +99,8 @@ const newsCtrl = {
     },
     deleteNews: async (req, res) => {
         try {
-            const news = await News.findByIdAndDelete({_id: req.params.id});
-    
+            const news = await News.findByIdAndDelete({ _id: req.params.id });
+
             res.json({
                 msg: 'News Removed',
                 news: {
@@ -95,14 +115,14 @@ const newsCtrl = {
     news: async (req, res) => {
         try {
             const news = await News.findById(req.params.id);
-    
-            const comments = await Comment.find({postId:req.params.id});
-            if(!comments)
-                return res.status(400).json({msg: "This News does not exist"});
-    
-            if(!news)
-                return res.status(400).json({msg: "This News does not exist"});
-    
+
+            const comments = await Comment.find({ postId: req.params.id });
+            if (!comments)
+                return res.status(400).json({ msg: "This News does not exist" });
+
+            if (!news)
+                return res.status(400).json({ msg: "This News does not exist" });
+
             res.json({
                 news,
                 comments
@@ -113,11 +133,11 @@ const newsCtrl = {
     },
     newsCat: async (req, res) => {
         try {
-            const news = await News.find({category:req.params.id}).sort('-createdAt');
-            
-            if(!news)
-                return res.status(400).json({msg: "This News does not exist"});
-    
+            const news = await News.find({ category: req.params.id }).sort('-createdAt');
+
+            if (!news)
+                return res.status(400).json({ msg: "This News does not exist" });
+
             res.json({
                 news
             })
@@ -127,56 +147,56 @@ const newsCtrl = {
     },
     search: async (req, res) => {
         try {
-            const news = await News.find({title: {$regex: req.query.news}});
-            res.json({news});
+            const news = await News.find({ title: { $regex: req.query.news } });
+            res.json({ news });
         } catch (err) {
-            return res.status(500).json({msg: err.message});
+            return res.status(500).json({ msg: err.message });
         }
     },
     saveNews: async (req, res) => {
         try {
-            const user = await Users.find({_id: req.user._id, saved: req.params.id});
+            const user = await Users.find({ _id: req.user._id, saved: req.params.id });
 
-            if(user.length > 0) 
-                return res.status(400).json({msg: "You saved this post."});
+            if (user.length > 0)
+                return res.status(400).json({ msg: "You saved this post." });
 
-            const save = await Users.findOneAndUpdate({_id: req.user.id}, {
-                $push: {saved: req.params.id}
-            }, {new: true})
+            const save = await Users.findOneAndUpdate({ _id: req.user.id }, {
+                $push: { saved: req.params.id }
+            }, { new: true })
 
-            if(!save) 
-                return res.status(400).json({msg: 'This user does not exist.'})
+            if (!save)
+                return res.status(400).json({ msg: 'This user does not exist.' })
 
-            res.json({msg: 'News Saved'});
+            res.json({ msg: 'News Saved' });
         } catch (err) {
-            return res.status(500).json({msg: err.message});
+            return res.status(500).json({ msg: err.message });
         }
     },
     unSaveNews: async (req, res) => {
         try {
-            const save = await Users.findOneAndUpdate({_id: req.params.user_id}, {
-                $pull: {saved: req.params.id}
-            }, {new: true});
+            const save = await Users.findOneAndUpdate({ _id: req.params.user_id }, {
+                $pull: { saved: req.params.id }
+            }, { new: true });
 
-            if(!save) 
-                return res.status(400).json({msg: 'This user does not exist.'})
+            if (!save)
+                return res.status(400).json({ msg: 'This user does not exist.' })
 
-            res.json({msg: 'unSaved news!'})
+            res.json({ msg: 'unSaved news!' })
         } catch (err) {
-            return res.status(500).json({msg: err.message});
+            return res.status(500).json({ msg: err.message });
         }
     },
     getSavedNews: async (req, res) => {
         try {
             const user = await Users.findById(req.user.id).select('-password');
             const saveNews = await News.find({
-                _id: {$in: user.saved}
+                _id: { $in: user.saved }
             });
             res.json({
                 saveNews
             })
         } catch (err) {
-            return res.status(500).json({msg: err.message});
+            return res.status(500).json({ msg: err.message });
         }
     },
     addcomment: async (req, res) => {
@@ -184,16 +204,16 @@ const newsCtrl = {
             const { content, postId, postUserId } = req.body;
 
             const news = await News.findById(postId);
-            if(!news)
-                return res.status(400).json({msg: "This News does not exist."});
+            if (!news)
+                return res.status(400).json({ msg: "This News does not exist." });
 
             const newCmnt = new Comment({
                 content, postId, postUserId, user: req.user.id
             });
 
-            await News.findOneAndUpdate({_id: postId}, {
-                $push: {comments: newCmnt._id}
-            }, {new: true});
+            await News.findOneAndUpdate({ _id: postId }, {
+                $push: { comments: newCmnt._id }
+            }, { new: true });
 
             await newCmnt.save();
 
@@ -207,10 +227,10 @@ const newsCtrl = {
     },
     comment: async (req, res) => {
         try {
-            const comments = await Comment.find({postId:req.params.id});
-            if(!comments)
-                return res.status(400).json({msg: "This News does not exist"});
-    
+            const comments = await Comment.find({ postId: req.params.id });
+            if (!comments)
+                return res.status(400).json({ msg: "This News does not exist" });
+
             res.json({
                 comments
             })

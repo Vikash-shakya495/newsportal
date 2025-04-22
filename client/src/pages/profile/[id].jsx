@@ -33,7 +33,7 @@ const User = () => {
                 <h2 className="user__name">{user.username}</h2>
                 <h2 className="user__email">{user.email}</h2>
                 <h2 className="user__website">{user.website}</h2>
-                <h2 >Create at {moment(user.createdAt).fromNow()}</h2>
+                <h2 className='user__time'>Joined {moment(user.createdAt).fromNow()}</h2>
                 </div>
                 <button className="homecard__btn" onClick={() => setEditUser(true)}>Edit Profile</button>
                 {
@@ -47,9 +47,10 @@ const User = () => {
                     ? <h2 className="no__savednews">No Saved News</h2>
                     : saveNews.map(news => (
                         <div className="saved__news">
-                            <img className="saved__img" src={news.images[0].url} alt="news"/>
+                            <img className="saved__img" src={news.images[0]} alt="news"/>
                             <div>
-                                <h2 className="saved__t"><Link className="saved__an" to={`/news/${news._id}`}>{news.title.length > 19 ? news.title.slice(0, 20) + '...' : news.title}</Link></h2>
+                                <h2 className="saved__t"><Link className="saved__an" to={`/news/${news._id}`}>{news.title.length > 19 ? news.title.slice(0) + '...' : news.title}</Link></h2>
+                                <h2 className="saved__c"><Link className="saved__content" to={`/news/${news._id}`}>{news.content.length > 19 ? news.content.slice(0,100) + '...' : news.content}</Link></h2>
                                 <h2 className="saved__time">{moment(news.createdAt).fromNow()}</h2>
                             </div>
                         </div>

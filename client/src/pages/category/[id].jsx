@@ -4,7 +4,7 @@ import HomeCard from '../HomeCard';
 import { getDataAPI } from './../../utils/fetchData';
 
 const NewsCatvise = () => {
-    const [news,setNews]=useState([])
+    const [news, setNews]=useState([])
     const {id}=useParams();
     useEffect(() => {
         async function fetchData() {

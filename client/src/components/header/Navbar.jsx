@@ -36,8 +36,8 @@ const Navbar = () => {
     };
 
     return (
-        <header>
-            <nav className="nav collapsible collapsible--expanded">
+        <header className=''>
+            <nav className="nav collapsible  collapsible--expanded">
                 <Link className="nav__brand" to="/"><img src={logo} className="logo_nav" alt="logo"/></Link>
                 <svg onClick={toggleBtn} className="icon nav__toggler">
                      <use href={sprite + "#menu"}></use>

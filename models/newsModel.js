@@ -22,7 +22,7 @@ const newsSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Cars' ,'Politics', 'Health', 'Sports', 'Education', 'Business', 'Science', 'World', 'Entertainment', 'Ancient' , 'Other']
+    enum: ['Cars' ,'Politics', 'Health', 'Sports', 'Education', 'Business', 'Science', 'World', 'Entertainment', 'Ancient' , 'Technology', 'Other']
   },
   tags: {
     type: [String],

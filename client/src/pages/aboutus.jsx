@@ -38,16 +38,13 @@ const Aboutus = () => {
                 <div className="ourself">
                     <span className="me">
                         <img src={img} className="about__img" alt="profile"/>
-                        <h3 className="about__email">ishitaachauhan11@gmail.com</h3>
+                        <h3 className="about__email">vinodchauhan3809@gmail.com</h3>
                     </span>
                     <span className="me">
                         <img src={img} className="about__img" alt="profile"/>
-                        <h3 className="about__email">charvitardeshna@gmail.com</h3>
+                        <h3 className="about__email">vikashshakya367@gmail.com</h3>
                     </span>
-                    <span className="me">
-                        <img src={img} className="about__img" alt="profile"/>
-                        <h3 className="about__email">smitbhoraniya11@gmail.com</h3>
-                    </span>
+
                 </div>
                 <div className="about__social">
                     <img src={instagram} alt="instagram" className="about__simg" />

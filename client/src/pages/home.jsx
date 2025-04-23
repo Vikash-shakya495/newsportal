@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getDataAPI } from './../utils/fetchData';
 import '../styles/homecard.css'
 import HomeCard from './HomeCard';
+// import SubscribeForm from './SubscribeForm';
 const Home = () => {
     const [news, setNews] = useState([]);
     
@@ -14,7 +15,12 @@ const Home = () => {
         fetchData();
     }, []);
 
+
+    
+
     return (
+        <>
+    
         <div className="main">
             {
                 news.map(n => (
@@ -22,6 +28,10 @@ const Home = () => {
                 ))
             }
         </div>
+        <div>
+            {/* <SubscribeForm/> */}
+        </div>
+        </>
     )
 };
 

@@ -7,26 +7,35 @@ const slugify = require('slugify');
 const newsCtrl = {
     addNews: async (req, res) => {
         try {
-            const { title, images, content, category, tags = [], isPublished = false, user } = req.body;
-
+            const {
+                title,
+                images,
+                content,
+                category,
+                tags = [],
+                isPublished = false,
+                user,
+                publishedAt // <- Accept from client
+            } = req.body;
+    
             if (!images || images.length === 0)
                 return res.status(400).json({ msg: "Please add your photo." });
-            
+    
             if (!title)
                 return res.status(400).json({ msg: "Please add title." });
-
+    
             if (!content)
                 return res.status(400).json({ msg: "Please add content." });
-            
+    
             if (!category)
                 return res.status(400).json({ msg: "Please add category." });
-            
+    
             const slug = `${slugify(title, { lower: true, strict: true })}-${Date.now()}`;
-
+    
             const existingNews = await News.findOne({ slug });
             if (existingNews)
                 return res.status(400).json({ msg: "News with similar title already exists." });
-
+    
             const newNews = new News({
                 title,
                 slug,
@@ -36,12 +45,14 @@ const newsCtrl = {
                 tags,
                 user,
                 isPublished,
-                publishedAt: isPublished ? new Date() : null,
+                publishedAt: isPublished
+                    ? (publishedAt ? new Date(publishedAt) : new Date())  // Use client value or default
+                    : null,
                 views: 0
             });
-
+    
             await newNews.save();
-
+    
             res.status(201).json({
                 msg: 'News Added Successfully 🎉',
                 news: {
@@ -49,12 +60,13 @@ const newsCtrl = {
                     user: req.user
                 }
             });
-
+    
         } catch (err) {
             console.error("Error adding news:", err);
             return res.status(500).json({ msg: "Internal Server Error" });
         }
-    },
+    }
+,    
     allNews: async (req, res) => {
         try {
             const news = await News.find().sort('-createdAt');
@@ -147,12 +159,29 @@ const newsCtrl = {
     },
     search: async (req, res) => {
         try {
-            const news = await News.find({ title: { $regex: req.query.news } });
-            res.json({ news });
+            const { news, date } = req.query;
+    
+            let query = {};
+    
+            if (news) {
+                query.title = { $regex: news, $options: 'i' }; // case-insensitive
+            }
+    
+            if (date) {
+                const start = new Date(date);
+                const end = new Date(date);
+                end.setHours(23, 59, 59, 999);
+    
+                query.publishedAt = { $gte: start, $lte: end }; // search within the day
+            }
+    
+            const newsList = await News.find(query);
+            res.json({ news: newsList });
+    
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
-    },
+    },   
     saveNews: async (req, res) => {
         try {
             const user = await Users.find({ _id: req.user._id, saved: req.params.id });
